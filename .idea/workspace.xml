@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5380d43d-0bbe-46dd-acbb-d7b2294ae07c" name="Changes" comment="宠物之家第n次提交，希望git不要报错" />
+    <list default="true" id="5380d43d-0bbe-46dd-acbb-d7b2294ae07c" name="Changes" comment="宠物之家第n次提交，希望git不要报错">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,6 +30,7 @@
     </option>
   </component>
   <component name="ProjectId" id="208NNQP1oUombKlRw6oZsFGu56J" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -52,6 +55,7 @@
       <workItem from="1635422343021" duration="278000" />
       <workItem from="1635422652023" duration="648000" />
       <workItem from="1635423328755" duration="58000" />
+      <workItem from="1635423419451" duration="231000" />
     </task>
     <task id="LOCAL-00001" summary="宠物之家第n次提交，希望git不要报错">
       <created>1635422505247</created>
