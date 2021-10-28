@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.ethan.org.mapper.EmployeeMapper">
+    <!--//保存对象-->
+    <!--void save(Employee employee);-->
+    <insert id="add" parameterType="Employee" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into t_employee(
+            username,
+            email,
+            phone,
+            salt,
+            state,
+            password,
+            age,
+            department_id,
+            logininfo_id,
+            shop_id
+        )values(
+                   #{username},
+                   #{email},
+                   #{phone},
+                   #{salt},
+                   #{state},
+                   #{password},
+                   #{age},
+                   #{department.id},
+                   #{logininfo_id},
+                   #{shop_id}
+               )
+    </insert>
+
+    <!--//移除一个对象-->
+
+    <delete id="delete" parameterType="long">
+        delete from t_employee where id = #{id}
+    </delete>
+
+    <delete id="patchDelete" parameterType="long">
+        delete from t_employee where id in
+        <foreach collection="list" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--//更新一个对象-->
+    <!--void update(Employee employee);-->
+    <update id="update" parameterType="Employee">
+        update t_employee set
+                              username=#{username},
+                              email=#{email},
+                              phone=#{phone},
+                              salt=#{salt},
+                              password=#{password},
+                              age=#{age},
+                              state=#{state},
+                              department_id=#{department.id},
+                              shop_id=#{shop_id},
+                              logininfo_id=#{logininfo_id}
+        where id = #{id}
+
+    </update>
+
+    <!--//加载一个对象-->
+    <!--Employee loadById(Long id);-->
+    <select id="selectOneById" parameterType="long" resultType="org.ethan.org.domain.Employee">
+        select * from t_employee where id = #{id}
+    </select>
+
+    <!--//加载所有对象-->
+    <!--List<Employee> loadAll();-->
+    <select id="selectAll" resultType="org.ethan.org.domain.Employee">
+        select * from t_employee
+    </select>
+
+    <select id="queryCounts" resultType="int">
+        select count(*) from t_employee e
+        <include refid="wheresql"/>
+    </select>
+
+    <resultMap id="EmployeeMap" type="Employee">
+        <!--基本属性处理-->
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="salt" column="salt"/>
+        <result property="password" column="password"/>
+        <result property="age" column="age"/>
+        <result property="state" column="state"/>
+        <!--关联属性处理-->
+        <!--private Department parent;//上级部门-->
+        <association property="department" javaType="Department">
+            <id property="id" column="did"/>
+            <result property="name" column="dname"/>
+            <result property="dirPath" column="dirPath"/>
+        </association>
+    </resultMap>
+
+    <select id="queryData" resultMap="EmployeeMap">
+        SELECT e.*,d.id did,d.name dname,d.dirPath  FROM t_employee e LEFT JOIN t_department d ON e.department_id = d.id
+        <include refid="wheresql"/>
+        limit #{startPage},#{pageSize}
+    </select>
+
+    <sql id="wheresql">
+        <where>
+            <if test="keyword !=null and keyword !=''">
+                and (e.username like concat('%',#{keyword},'%') or e.email like concat('%',#{keyword},'%') )
+            </if>
+        </where>
+    </sql>
+
+    <select id="findTree" resultType="org.ethan.org.domain.Employee">
+        SELECT
+            f.id,
+            f.username,
+            s.id sid,
+            s.name
+        FROM
+            t_employee f
+                LEFT JOIN t_department s ON s.id = f.id
+    </select>
+
+    <!--Employee findByUser(String username);-->
+    <select id="findByUsername" resultType="org.ethan.org.domain.Employee">
+        select * from t_employee
+        where (username=#{username} or phone=#{username} or email=#{username})
+    </select>
+
+
+</mapper>

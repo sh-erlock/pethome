@@ -1,0 +1,26 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql:///pethome
+  mail:
+    host: smtp.qq.com
+    username: zingdlc@qq.com
+    password: jcozezxcmipwghcj  #授权码，不是密码
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: 123456
+    jedis:
+      pool:
+        max-wait: 2000ms
+        min-idle: 2
+        max-idle: 8
+
+mybatis:
+  type-aliases-package: org.ethan.org.domain, org.ethan.org.query
+  mapper-locations: classpath:org/ethan/*/mapper/*Mapper.xml #可以不写，约定大于配置

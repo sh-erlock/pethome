@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ethan.system.mapper.SystemDictionaryDetailMapper">
+    <!--List<SystemDictionaryDetail> loadByTypeId(Long id);-->
+    <select id="loadByTypeId" resultType="org.ethan.system.domain.SystemDictionaryDetail">
+        SELECT * FROM t_systemdictionarydetail WHERE types_id=#{id}
+    </select>
+
+    <!-- List<SystemDictionaryDetail> loadByIds(Long[] ids);-->
+    <select id="loadByIds" resultType="org.ethan.system.domain.SystemDictionaryDetail">
+        SELECT * FROM t_systemdictionarydetail WHERE types_id IN
+        <foreach close=")" collection="array" item="id" separator="," open="(">
+            #{id}
+        </foreach>
+    </select>
+
+    <!--void patchDelete(List<Long> ids);-->
+    <delete id="patchDelete">
+        DELETE FROM t_systemdictionarydetail WHERE id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--void save(Employee d);
+        manager：对象
+    -->
+    <insert id="add">
+        INSERT into t_systemdictionarydetail(name,types_id)
+        VALUES (#{name},#{sdt.id})
+    </insert>
+
+    <!--void remove(Long id);-->
+    <delete id="delete">
+        DELETE FROM t_systemdictionarydetail WHERE id=#{id}
+    </delete>
+
+    <!--void update(Employee d);-->
+    <update id="update">
+        UPDATE t_systemdictionarydetail SET
+                                            name=#{name},
+                                            types_id=#{sdt.id}
+        where id=#{id}
+    </update>
+
+    <!--Employee loadById(Long id );-->
+    <select id="selectOneById" resultType="org.ethan.system.domain.SystemDictionaryDetail">
+        SELECT * FROM  t_systemdictionarydetail WHERE id=#{id}
+    </select>
+
+    <!--List<Employee> loadAll();-->
+    <select id="selectAll" resultType="org.ethan.system.domain.SystemDictionaryDetail">
+        SELECT * FROM t_systemdictionarydetail
+    </select>
+
+    <!--Long queryCount(EmployeeQuery query);-->
+    <select id="queryCounts" resultType="int">
+        select COUNT(id) FROM t_systemdictionarydetail t1
+        <include refid="employeequery"/>
+    </select>
+
+    <!--List<Employee> queryData(EmployeeQuery query);
+        limit 参数一，参数二，
+    -->
+    <select id="queryData" resultMap="detailMap">
+        SELECT t1.*,t2.id tid, t2.name tname FROM t_systemdictionarydetail t1
+        join t_systemdictionarytype t2
+        on t1.types_id = t2.id
+        <include refid="employeequery"/>
+        limit #{startPage},#{pageSize}
+    </select>
+
+    <!-- 高级查询的sql片段 -->
+    <sql id="employeequery">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and t1.name like concat("%",#{keyword},"%")
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="detailMap" type="org.ethan.system.domain.SystemDictionaryDetail">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <association property="sdt" javaType="org.ethan.system.domain.SystemDictionaryType">
+            <id column="tid" property="id"/>
+            <result column="tname" property="name"/>
+        </association>
+    </resultMap>
+
+
+</mapper>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.ethan.org.mapper.DepartmentMapper">
+
+<!--    Department selectOneById(Long id);-->
+    <select id="selectOneById" resultType="Department">
+        select * from t_department where id = #{id}
+    </select>
+
+<!--    List<Department> selectAll();-->
+    <select id="selectAll" resultType="Department">
+        select * from t_department
+    </select>
+
+<!--    void add(Department department);-->
+    <insert id="add" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into t_department
+        (sn, name, dirPath, state, manager_id, parent_id)
+        VALUES
+        (#{sn}, #{name}, #{dirPath}, #{state}, #{manager.id}, #{parent.id})
+    </insert>
+
+<!--    void update(Department department);-->
+    <update id="update">
+        update t_department
+        set
+        sn = #{sn}, name = #{name}, dirPath = #{dirPath}, state = #{state}, manager_id = #{manager.id}, parent_id = #{parent.id}
+        where id = #{id}
+    </update>
+
+<!--    void delete(Long id);-->
+    <delete id="delete">
+        delete from t_department where id = #{id}
+    </delete>
+
+
+    <!--    Integer queryCounts(DepartmentQuery query);-->
+    <select id="queryCounts" resultType="int">
+        select count(id) from t_department td
+        <include refid="wheresql"/>
+    </select>
+
+<!--    List<Department> queryData(DepartmentQuery query)-->
+    <select id="queryData" resultMap="DeptMap">
+        select
+            td.*, te.id eid,
+            te.username ename,
+            parent.id pid,
+            parent.name pname
+        from
+            t_department td
+
+            left join t_employee te on td.manager_id = te.id
+            left join t_department parent on parent.id = td.parent_id
+            <include refid="wheresql"/>
+        limit #{startPage}, #{pageSize}
+    </select>
+
+
+    <!-- void patchDelete(List<Long> ids);-->
+    <delete id="patchDelete">
+        delete from t_department where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+
+    </delete>
+
+    <!--List<Department> findTree();-->
+    <select id="findTree" resultMap="treeMap">
+        select
+            td.id,
+            td.name,
+            td2.id tid,
+            td2.name tname
+        from t_department td
+            left join t_department td2
+            on td2.parent_id = td.id
+        where td.parent_id is null
+    </select>
+
+    <resultMap id="treeMap" type="Department">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+
+        <collection property="children" ofType="department">
+            <id column="tid" property="id"/>
+            <result column="tname" property="name"/>
+        </collection>
+    </resultMap>
+
+    <sql id="wheresql">
+        <where>
+            <if test="keyword != null and !''.equals(keyword)">
+                and (td.sn like concat ('%', #{keyword}, '%')
+                or td.name like concat ('%', #{keyword}, '%'))
+            </if>
+        </where>
+
+    </sql>
+
+    <resultMap id="DeptMap" type="department">
+        <id column="id" property="id"/>
+        <result column="sn" property="sn"/>
+        <result column="name" property="name"/>
+        <result column="dirPath" property="dirPath"/>
+        <result column="state" property="state"/>
+        <result column="manager_id" property="manager_id"/>
+        <result column="parent_id" property="parent_id"/>
+
+        <association property="manager" javaType="employee">
+            <id column="eid" property="id"/>
+            <result column="ename" property="username"/>
+        </association>
+
+        <association property="parent" javaType="department">
+            <id column="pid" property="id"/>
+            <result column="pname" property="name"/>
+        </association>
+
+    </resultMap>
+
+</mapper>

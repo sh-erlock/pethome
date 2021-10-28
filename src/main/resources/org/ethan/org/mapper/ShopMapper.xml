@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.ethan.org.mapper.ShopMapper">
+    <insert id="add" parameterType="Shop" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into t_shop(
+            name,
+            tel,
+            registerTime,
+            state,
+            address,
+            logo,
+            admin_id
+        )
+        values
+            (
+                #{   name},
+                #{   tel},
+                #{   registerTime},
+                #{   state},
+                #{   address},
+                #{   logo},
+                #{   admin.id}
+            )
+    </insert>
+
+    <update id="update" parameterType="Shop">
+        update t_shop set name=#{name},tel=#{tel},registerTime=#{registerTime},state=#{state},address=#{address},logo=#{logo},admin_id=#{admin.id} WHERE  id=#{id}
+
+    </update>
+
+
+    <delete id="delete" parameterType="long">
+        delete from t_shop where id=#{id}
+    </delete>
+    <!--    //分页查询总条数-->
+    <!--    Long queryCount(BaseQuery baseQuery);-->
+    <select id="queryCounts" parameterType="ShopQuery" resultType="int">
+        select count(*) from t_shop t
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                AND t.name LIKE concat('%',#{keywords},'%')
+            </if>
+            <if test="state!=-1">
+                AND t.state =#{state}
+            </if>
+        </where>
+    </select>
+
+    <!--    //查询当前页数-->
+    <!--    List<T> queryData(BaseQuery baseQuery);-->
+    <select id="queryData" parameterType="ShopQuery" resultType="Shop">
+        select t.* from t_shop t
+        <where>
+            <if test="keyword !=null and keyword !=''">
+                AND t.name LIKE concat('%',#{keyword},'%')
+            </if>
+            <if test="state!=-1">
+                AND t.state =#{state}
+            </if>
+        </where>
+        limit #{startPage},#{pageSize}
+    </select>
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ethan.system.mapper.SystemDictionaryTypeMapper">
+    <!--List<Employee> loadAll();-->
+    <select id="loadAll" resultType="org.ethan.system.domain.SystemDictionaryType">
+        select * from t_systemdictionarytype
+    </select>
+    <!--void patchDelete(List<Long> ids);-->
+    <delete id="patchDelete">
+        DELETE FROM t_systemdictionarytype WHERE id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--void save(Employee d);
+        manager：对象
+    -->
+    <insert id="add">
+        INSERT into t_systemdictionarytype(sn,name)
+        VALUES (#{sn},#{name})
+    </insert>
+
+    <!--void remove(Long id);-->
+    <delete id="delete">
+        DELETE FROM t_systemdictionarytype WHERE id=#{id}
+    </delete>
+
+    <!--void update(Employee d);-->
+    <update id="update">
+        UPDATE t_systemdictionarytype SET
+                                          sn=#{sn},
+                                          name=#{name}
+        where id=#{id}
+    </update>
+
+    <!--Employee loadById(Long id );-->
+    <select id="selectOneById" resultType="org.ethan.system.domain.SystemDictionaryType">
+        SELECT * FROM  t_systemdictionarytype WHERE id=#{id}
+    </select>
+
+
+
+    <!--Long queryCount(EmployeeQuery query);-->
+    <select id="queryCounts" resultType="int">
+        select COUNT(id) FROM t_systemdictionarytype d
+        <include refid="employeequery"/>
+    </select>
+
+    <!--List<Employee> queryData(EmployeeQuery query);
+        limit 参数一，参数二，
+    -->
+    <select id="queryData" resultType="org.ethan.system.domain.SystemDictionaryType">
+        SELECT
+        d.*
+        FROM
+        t_systemdictionarytype d
+        <include refid="employeequery"/>
+        limit #{startPage},#{pageSize}
+    </select>
+
+    <!-- 高级查询的sql片段 -->
+    <sql id="employeequery">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (d.name like concat("%",#{keyword},"%") or d.sn like concat("%",#{keyword},"%"))
+            </if>
+        </where>
+    </sql>
+</mapper>
